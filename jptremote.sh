@@ -3,11 +3,11 @@ trap "kill 0" SIGINT   #- kill all subshells on exit
 
 #- default inputs
 port=8889
-d_server='tinney.cp.dias.ie'
-t_server='ariadne.dias.ie'
-conda_env='ncpy_v3.7'
+d_server='None'
+t_server='None'
+conda_env='None'
 jupyter='jupyter-lab'
-USER=${DIASUSER}
+USER='None'
 
 
 #- help function
