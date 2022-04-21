@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#- opens vim of any file in the path, without the need to cd.
+#
+#- e.g.:
+#       pwd
+#       /my/current/directory
+#       
+#       which myprogram.sh
+#       /path/to/myprogram.sh
+#       
+#       vicheck myprogram
+#
+
+#- check only one argument
+if [ "$#" -ne 1 ]; then
+	echo "wrong number of arguments, exit"
+	exit
+fi
+
+#- determine the absolute path to the executable file
+abspath="$(which "$1")"
+
+if [ ! -f ${abspath} ]; then
+	echo "error: file $abspath does not exist. exit"
+	exit
+fi
+
+#- view the file in VIM
+vi ${abspath}
