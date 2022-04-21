@@ -26,4 +26,4 @@ if [ ! -f ${abspath} ]; then
 fi
 
 #- view the file in VIM
-vi ${abspath}
+vim ${abspath}
