@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 #- defaults
-d_server='tinney.cp.dias.ie'
-t_server='ariadne.dias.ie'
-rdir='NoNe'
-USER=${DIASUSER}
+d_server='None'
+t_server='None'
+rdir='None'
+USER='None'
 
 
 HELP () {
@@ -58,12 +58,12 @@ while getopts hs:t:c:d: OPT; do
 done
 
 #- set no cd command
-if [ ${rdir} != 'NoNe' ]; then
+if [ ${rdir} != 'None' ]; then
 	rdir="cd ${rdir} &&"
 else
 	rdir=""
 fi
 
 #- run the actual command
-ssh -J ${USER}@${t_server} ${USER}@${d_server} "source ~/.bash_private && source ~/.bash_alias && ${rdir} ${rcmd}"
+ssh -J ${USER}@${t_server} ${USER}@${d_server} "source ~/.bashrc && ${rdir} ${rcmd}"
 
