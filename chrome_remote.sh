@@ -1,8 +1,29 @@
 #!/bin/bash
 
-USER=$DIASUSER
-d_server='ariadne.dias.ie'
+USER='None'
+d_server='None'
 port=8080
+
+#- help function
+HELP () {
+cat << EOM
+##############################################################
+Program:   $0, Nicolas Celli 2022
+Purpose:   run google chrome through a proxy.
+Syntax:    $0 -u proxy_user -s proxy_server -p port
+##############################################################
+EOM
+}
+
+#- read in options
+while getopts hu:s:p: OPT; do
+  case ${OPT} in
+    h)  HELP; exit;;
+    u)  USER=`echo ${OPTARG}`;;
+    s)  d_server=`echo ${OPTARG}`;;
+    p)  port=`echo ${OPTARG}`;;
+  esac
+done
 
 #- check which OS
 #- OSX
@@ -23,7 +44,6 @@ elif [ $(uname -r | grep -i "microsoft" | wc -l) == 1 ]; then
 	chrpath="/mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe"
 fi
 
-
 #- Forward the port to the remote server
 \ssh -C -4 -D ${port} -N ${USER}@${d_server} &
 pid=$!
@@ -34,7 +54,6 @@ function finish {
 }
 
 #- execute chrome
-#eval ${chrpath} --user-data-dir="$HOME/proxy-profile" --proxy-server="socks5://localhost:8080"
 eval ${chrpath} --proxy-server="socks5://localhost:${port}"
 
 #- cleanup
