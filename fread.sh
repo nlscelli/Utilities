@@ -6,8 +6,8 @@
 #  read one argument in the first line and rewind file, skip the second and read 3 arguments from the third line
 #	
 #       fread.sh rewind mytxtfile arg1
-#       fread.sh mytxtfile skip
-#       fread.sh mytxtfile fread arg2 arg3 arg4
+#       fread.sh skip mytxtfile 
+#       fread.sh fread mytxtfile arg2 arg3 arg4
 #
 
 #- read input
