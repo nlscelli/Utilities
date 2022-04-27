@@ -65,10 +65,10 @@ remotecomm="${conda_comm} nohup ${jupyter} --port=${port} --no-browser --ip=0.0.
 
 #- execute remotely the command for jupyter
 echo "Starting remote jupyter session on ${d_server}"
-\ssh -J ${USER}@${t_server} ${USER}@${d_server} "source ~/.bash_private && source ~/.bash_alias && ${remotecomm}" &
+\ssh -J ${USER}@${t_server} ${USER}@${d_server} "source ~/.bashrc && ${remotecomm}" &
 
 #- forwarding the port to your computer for you to access the notebook
-echo "Forwarding port ${port} to DIAS server ${d_server} "
+echo "Forwarding port ${port} to server ${d_server} "
 
 printf "\n Access notebook by navigating in your browser to:\n  http://localhost:${port}/ \n\n"
 \ssh -l ${USER} -L ${port}:"${d_server}":${port} -N ${t_server} || echo "Connection aborted"
