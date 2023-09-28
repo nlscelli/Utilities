@@ -30,7 +30,7 @@ Syntax:
               reach the destination server (aka proxy server)
            -p port on which to open jupyter (default 8889)
            -e anaconda environment from which to open jupyter (if any)
-					 -j what notebook to run: either "jupyter-lab" or "jupyter notebook"
+	   -j what notebook to run: either "jupyter-lab" or "jupyter notebook"
               (within quotes)
            -x close remote notebook matching parameters
 
@@ -81,27 +81,38 @@ if [ ${jupyter} != "jupyter-lab" ] && [ ${jupyter} != "jupyter notebook" ]; then
 	echo '-j has to indicate either "jupyter-lab" or "jupyter notebook", exit' && exit
 fi
 
+#- check if need port forwarding or not
+iftunnel=0
+fping -q ${d_server} || iftunnel=1
+if [ ${iftunnel} == 0 ]; then
+  tunnel=""
+  tunnelport="${port}:${d_server}:${port} -N ${d_server}"
+else
+  tunnel="-J ${USER}@${t_server}"
+  tunnelport="${port}:${d_server}:${port} -N ${t_server}"
+fi
+
 #- build remote command for jupyter
 remotecomm="${conda_comm} nohup ${jupyter} --port=${port} --no-browser --ip=0.0.0.0 > jptset.out"
 
 #- check if the port is available
-if_port_free=$(\ssh -J ${USER}@${t_server} ${USER}@${d_server} "lsof -nP -iTCP -sTCP:LISTEN | awk '{print $9}' | grep $port" | wc -l)
+if_port_free=$(\ssh ${tunnel} ${USER}@${d_server} "lsof -nP -iTCP -sTCP:LISTEN | awk '{print $9}' | grep $port" | wc -l)
 if [ ${if_port_free} -gt 0 ]; then
 
 	#- check if there is already a matching running notebook
-	already_running=$(\ssh -J ${USER}@${t_server} ${USER}@${d_server} "${conda_comm} ${jupyter} list | tail -n +2 | grep :${port} | grep ${USER} | wc -l")
+	already_running=$(\ssh ${tunnel} ${USER}@${d_server} "${conda_comm} ${jupyter} list | tail -n +2 | grep :${port} | grep ${USER} | wc -l")
 
 	if [ ${already_running} -gt 0 ]; then
 		if [ ${jptstop} == 1 ]; then
 
 			#- ...stop it if wanted...
 			printf "\n shutting down open jupyter on ${d_server}, port ${port}"
-			\ssh -J ${USER}@${t_server} ${USER}@${d_server} "${conda_comm} ${jupyter} stop ${port}" && exit
+			\ssh ${tunnel} ${USER}@${d_server} "${conda_comm} ${jupyter} stop ${port}" && exit
 		else
 
 			#- ...or reconnect to it
 			printf "\n reconnecting to open jupyter on ${d_server}, port ${port}"
-			\ssh -o ExitOnForwardFailure=yes -l ${USER} -L ${port}:"${d_server}":${port} -N ${t_server}
+			\ssh -o ExitOnForwardFailure=yes -l ${USER} -L ${tunnelport}
 			exit
 		fi
 	else
@@ -111,13 +122,13 @@ fi
 
 #- execute remotely the command for jupyter
 printf "\n Starting remote jupyter session on ${d_server}"
-\ssh -J ${USER}@${t_server} ${USER}@${d_server} "source ~/.bash_private && source ~/.bash_alias && ${remotecomm}" &
+\ssh ${tunnel} ${USER}@${d_server} "source ~/.bash_private && source ~/.bash_alias && ${remotecomm}" &
 
 #- forwarding the port to your computer for you to access the notebook
 printf "\n Forwarding port ${port} to DIAS server ${d_server} "
 
 printf "\n Access jupyter by navigating in your browser to:\n  http://localhost:${port}/ \n\n"
 printf "\n Beginning the jupyter log:\n\n"
-\ssh -o ExitOnForwardFailure=yes -l ${USER} -L ${port}:"${d_server}":${port} -N ${t_server}
+\ssh -o ExitOnForwardFailure=yes -l ${USER} -L ${tunnelport}
 
 #- Done!
