@@ -77,7 +77,7 @@ else
 fi
 
 #- check for which jupyter program to run
-if [ ${jupyter} != "jupyter-lab" ] && [ ${jupyter} != "jupyter notebook" ]; then
+if [[ ${jupyter} != "jupyter-lab" ]] && [[ ${jupyter} != "jupyter notebook" ]]; then
 	echo '-j has to indicate either "jupyter-lab" or "jupyter notebook", exit' && exit
 fi
 
@@ -122,7 +122,7 @@ fi
 
 #- execute remotely the command for jupyter
 printf "\n Starting remote jupyter session on ${d_server}"
-\ssh ${tunnel} ${USER}@${d_server} "source ~/.bash_private && source ~/.bash_alias && ${remotecomm}" &
+\ssh ${tunnel} ${USER}@${d_server} "source ~/.bashrc && ${remotecomm}" &
 
 #- forwarding the port to your computer for you to access the notebook
 printf "\n Forwarding port ${port} to DIAS server ${d_server} "
